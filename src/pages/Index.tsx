@@ -20,17 +20,34 @@ const timelinePreview = [
 const Index = () => (
   <Layout>
     {/* Hero */}
-    <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[90vh] overflow-hidden">
       <img src={heroBg} alt="জুলাই অভ্যুত্থান" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
-      <div className="absolute inset-0 bg-background/70" />
-      <div className="relative z-10 text-center px-4 animate-fade-in">
-        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-primary text-glow-green mb-4">
-          জুলাই অভ্যুত্থান
-        </h1>
-        <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-8">
-          রক্তে রাঙানো পথে, স্বাধীনতার নতুন ভোর — বাংলাদেশের ছাত্র-জনতার অপ্রতিরোধ্য জাগরণ
-        </p>
-        <div className="gradient-line h-1 w-48 mx-auto rounded-full" />
+      <div className="absolute inset-0 bg-background/80" />
+      <div className="relative z-10 page-container grid grid-cols-1 md:grid-cols-2 gap-8 items-center min-h-[90vh]">
+        {/* Left */}
+        <div className="animate-fade-in py-16 md:py-0">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-primary text-glow-green mb-4 text-left">
+            জুলাই অভ্যুত্থান
+          </h1>
+          <p className="text-lg sm:text-xl text-foreground/80 max-w-xl mb-8 text-left">
+            রক্তে রাঙানো পথে, স্বাধীনতার নতুন ভোর — বাংলাদেশের ছাত্র-জনতার অপ্রতিরোধ্য জাগরণ
+          </p>
+          <div className="gradient-line h-1 w-48 rounded-full" />
+        </div>
+        {/* Right */}
+        <div className="relative flex items-end justify-center h-full">
+          <img
+            src={dictatorImg}
+            alt="স্বৈরাচার"
+            className="relative z-0 w-full max-w-md h-auto object-contain drop-shadow-2xl"
+          />
+          <span
+            className="absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl sm:text-7xl font-black text-accent border-4 border-accent px-6 py-2 rounded-md select-none opacity-90"
+            style={{ transform: 'translate(-50%, -50%) rotate(-18deg)' }}
+          >
+            স্বৈরাচার
+          </span>
+        </div>
       </div>
     </section>
 
