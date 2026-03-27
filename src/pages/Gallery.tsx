@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Loader2 } from "lucide-react";
+import { storage, db } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "firebase/firestore";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
@@ -15,38 +18,54 @@ const defaultImages = [
   { src: gallery3, caption: "আন্দোলনের পর নির্জন রাজপথ" },
 ];
 
-const STORAGE_KEY = "gallery_uploaded_images";
-
 const Gallery = () => {
   const [selected, setSelected] = useState<number | null>(null);
-  const [uploadedImages, setUploadedImages] = useState<{ src: string; caption: string }[]>([]);
+  const [firebaseImages, setFirebaseImages] = useState<{ src: string; caption: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setUploadedImages(JSON.parse(saved));
-    } catch {}
+    const fetchImages = async () => {
+      try {
+        const q = query(collection(db, "images"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        const imgs = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return { src: data.url as string, caption: data.caption as string };
+        });
+        setFirebaseImages(imgs);
+      } catch (err) {
+        console.error("Error fetching images:", err);
+      }
+    };
+    fetchImages();
   }, []);
 
-  const allImages = [...defaultImages, ...uploadedImages];
+  const allImages = [...defaultImages, ...firebaseImages];
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const newImg = { src: reader.result as string, caption: file.name.replace(/\.[^/.]+$/, "") };
-        setUploadedImages((prev) => {
-          const updated = [...prev, newImg];
-          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); } catch {}
-          return updated;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        const caption = file.name.replace(/\.[^/.]+$/, "");
+        await addDoc(collection(db, "images"), {
+          url,
+          caption,
+          createdAt: serverTimestamp(),
         });
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = "";
+        setFirebaseImages((prev) => [{ src: url, caption }, ...prev]);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   };
 
   return (
@@ -59,10 +78,11 @@ const Gallery = () => {
             </h1>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity"
+              disabled={uploading}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              <Plus size={18} />
-              ছবি যোগ করুন
+              {uploading ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+              {uploading ? "আপলোড হচ্ছে..." : "ছবি যোগ করুন"}
             </button>
             <input
               ref={fileInputRef}
