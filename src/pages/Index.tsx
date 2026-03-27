@@ -27,7 +27,7 @@ const Index = () => (
       <div className="relative z-10 page-container flex items-center min-h-[90vh]">
         <div className="animate-fade-in py-16 md:py-0 w-full">
           <div className="flex items-center gap-4 mb-4">
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-primary text-glow-green text-left">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-primary text-glow-green text-left">
               জুলাই অভ্যুত্থান
             </h1>
             <img
