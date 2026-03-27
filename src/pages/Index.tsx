@@ -6,9 +6,9 @@ import dictatorSmall from "@/assets/dictator-small.png";
 import { Calendar, Clock, Users, ArrowRight } from "lucide-react";
 
 const stats = [
-  { icon: Calendar, label: "মোট ঘটনা", value: "৫০+", color: "text-primary" },
-  { icon: Clock, label: "আন্দোলনের দিন", value: "২৬", color: "text-primary" },
-  { icon: Users, label: "শহীদ", value: "শত শত", color: "text-accent" },
+  { icon: Calendar, label: "মোট ঘটনা", value: "১২০+", color: "text-primary", note: "" },
+  { icon: Clock, label: "আন্দোলনের দিন", value: "২৬", color: "text-primary", note: "" },
+  { icon: Users, label: "শহীদ", value: "১০০০+", color: "text-accent", note: "এই সংখ্যা নিয়মিত আপডেট হচ্ছে" },
 ];
 
 const timelinePreview = [
@@ -52,6 +52,7 @@ const Index = () => (
             <s.icon className={`mx-auto mb-4 ${s.color}`} size={32} />
             <p className={`text-4xl font-black ${s.color} mb-2`}>{s.value}</p>
             <p className="text-muted-foreground text-sm">{s.label}</p>
+            {s.note && <p className="text-muted-foreground/60 text-xs mt-1">{s.note}</p>}
           </div>
         ))}
       </div>
